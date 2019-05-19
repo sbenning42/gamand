@@ -1,0 +1,65 @@
+scalar JSON
+directive @auth on OBJECT | FIELD_DEFINITION
+
+type Role @auth {
+    id: ID!
+    name: String!
+}
+
+type User @auth {
+    id: ID!
+    roles: [HasRole]
+    credentials: OwnCredentials
+    profils: OwnProfil
+    todos: [OwnTodo]
+}
+
+type Credentials {
+    id: ID!
+    email: String!
+    password: String
+    owner: OwnCredentials
+}
+
+type Profil {
+    id: ID!
+    email: String!
+    name: String!    
+    birthdate: DateTime!
+    owner: OwnProfil
+}
+
+type Todo {
+    id: ID!  
+    title: String!   
+    done: Boolean!  
+    owner: OwnTodo
+}
+
+#####################################################################################################################
+
+type HasRole @relation(name: "HAS") {
+    from: User
+    to: Role
+    createdAt: DateTime!
+}
+
+type OwnCredentials @relation(name: "OWN") {
+    from: User
+    to: Credentials
+    createdAt: DateTime!
+}
+
+type OwnProfil @relation(name: "OWN") {
+    from: User
+    to: Profil
+    createdAt: DateTime!
+}
+
+type OwnTodo @relation(name: "OWN") {
+    from: User
+    to: Todo
+    createdAt: DateTime!
+}
+
+#######################################################################################################################

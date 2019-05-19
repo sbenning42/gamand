@@ -1,0 +1,69 @@
+scalar JSON
+
+directive @admin on FIELD_DEFINITION | OBJECT | QUERY
+directive @owner on FIELD_DEFINITION | OBJECT | QUERY
+
+type Role @admin {
+    id: ID!
+    name: String!
+}
+
+type Credentials @owner {
+    id: ID!
+    email: String!
+    password: String!
+    owner: OwnCredentials
+}
+
+type Profil @owner @admin {
+    id: ID!
+    email: String!
+    name: String!
+    birthdate: DateTime!
+    owner: OwnProfil
+}
+
+type User @owner @admin {
+    id: ID!
+    credentials: OwnCredentials
+    roles: [HasRole]
+    profils: [OwnProfil]
+    todos: [OwnTodo]
+}
+
+type Todo @owner @admin {
+    id: ID!
+    title: String!
+    json: JSON
+    owner: OwnTodo
+}
+
+# RELATIONS TYPES
+
+type HasRole @relation(name: "HAS") {
+    from: User
+    to: Role
+    createdAt: DateTime!
+    metadata: JSON
+}
+
+type OwnTodo @relation(name: "OWN") {
+    from: User
+    to: Todo
+    createdAt: DateTime!
+    metadata: JSON
+}
+
+type OwnCredentials @relation(name: "OWN") {
+    from: User
+    to: Credentials
+    createdAt: DateTime!
+    metadata: JSON
+}
+
+type OwnProfil @relation(name: "OWN") {
+    from: User
+    to: Profil
+    createdAt: DateTime!
+    metadata: JSON
+}
