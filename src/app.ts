@@ -5,10 +5,10 @@ import bodyParser from 'body-parser';
 import express, { Request, Response } from 'express';
 import { ApolloServer, makeExecutableSchema } from 'apollo-server-express';
 import { v1 as Neo } from 'neo4j-driver';
-import { makeAugmentedSchema, augmentSchema, neo4jGraphql } from 'neo4j-graphql-js';
+import { makeAugmentedSchema, augmentSchema, neo4jgraphql } from 'neo4j-graphql-js';
 import { Auth } from './auth/auth';
 import { resolvers } from './resolvers';
-import { schemaDirectives } from './directives/schema-directives';
+import { schemaDirectives, directiveRegister } from './directives/schema-directives';
 import { PassportJwt } from './auth/passport-jwt';
 import passport from 'passport';
 
@@ -40,6 +40,8 @@ const baseSchema = makeAugmentedSchema({
 
 const schema = baseSchema; // makeLastAugmentationInSchema({ schema: baseSchema });
 
+directiveRegister.compute(schema);
+
 app.use(
     cors(),
     bodyParser.json(),
@@ -56,7 +58,7 @@ app.use(
 const auth = new PassportJwt(app, driver);
 
 const context = ({ req, res }: { req: Request, res: Response }) => ({
-    req, res, driver, auth, neo4jGraphql
+    req, res, driver, auth, neo4jgraphql
 });
 
 app.post('/signup', auth.signup());

@@ -1,6 +1,7 @@
 scalar JSON
 
-directive @owner(for: [String!]! except: [String!]) on OBJECT
+directive @self on OBJECT
+directive @owned on OBJECT
 directive @auth(for: [String!]!) on OBJECT | FIELD_DEFINITION
 directive @admin(for: [String!]!) on OBJECT | FIELD_DEFINITION
 directive @hasRole(for: [String!]!, name: [String!]!) on OBJECT | FIELD_DEFINITION
@@ -12,14 +13,14 @@ type Role @auth(for: ["query"]) @admin(for: ["mutations"]) {
     name: String!
 }
 
-type Todo @auth(for: ["query"]) @hasRole(for: ["mutations"] name: ["admin", "owner"]) @owner(for: ["mutations"] except: ["admin"]) {
+type Todo @auth(for: ["query"]) @admin(for: ["mutations"]) {
     id: ID!  
     title: String!   
     done: Boolean!  
     owner: OwnTodo
 }
 
-type User @hasRole(for: ["all"] name: ["admin", "owner", "self"]) {
+type User @hasRole(for: ["all"] name: ["admin", "self"]) @self {
     id: ID!
     roles: [HasRole]
     credentials: OwnCredentials
@@ -27,14 +28,14 @@ type User @hasRole(for: ["all"] name: ["admin", "owner", "self"]) {
     todos: [OwnTodo]
 }
 
-type Credentials @hasRole(for: ["all"] name: ["admin", "owner"]) @owner(for: ["all"] except: ["admin"]) {
+type Credentials @hasRole(for: ["all"] name: ["admin", "owner"]) @owned {
     id: ID!
     email: String!
     password: String
     owner: OwnCredentials
 }
 
-type Profil @hasRole(for: ["all"] name: ["admin", "owner"]) @owner(for: ["all"] except: ["admin"]) {
+type Profil @hasRole(for: ["all"] name: ["admin", "owner"]) @owned {
     id: ID!
     email: String!
     name: String!    

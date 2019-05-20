@@ -1,0 +1,71 @@
+scalar JSON
+
+type Role {
+    id: ID!
+    name: String!
+}
+
+type Credentials {
+    email: String!
+    password: String!
+}
+
+type Profil {
+    email: String!
+    activated: Boolean!
+    name: String!
+    birthdate: DateTime!
+    json: JSON!
+}
+
+type User {
+    id: ID!
+    roles: [HasRole]
+    credentials: OwnCredentials
+    profil: OwnProfil
+    resources: [OwnTodo]
+}
+
+interface Resource {
+    id: ID!
+}
+
+type Todo implements Resource {
+    id: ID!
+    title: String!
+    done: Boolean!
+}
+
+#########################################################
+
+type HasRole @relation(name: "HAS") {
+    from: User
+    to: Role
+    createdAt: DateTime
+}
+type OwnCredentials @relation(name: "OWN") {
+    from: User
+    to: Credentials
+    createdAt: DateTime
+}
+type OwnProfil @relation(name: "OWN") {
+    from: User
+    to: Profil
+    createdAt: DateTime
+}
+type OwnTodo @relation(name: "OWN") {
+    from: User
+    to: Todo
+    createdAt: DateTime
+}
+
+type Query {
+    User(
+        id: ID
+        _id: String
+        first: Int
+        offset: Int
+        orderBy: [_UserOrdering]
+        filter: _UserFilter
+    ): [User] @cypher(statement: "MATCH (this) RETURN this")
+}

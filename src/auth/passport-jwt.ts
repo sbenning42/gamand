@@ -33,7 +33,7 @@ export class PassportJwt {
                     .id,
                     credentials: c { .id, .email, .password },
                     profil: p { .id, .email, .name, .birthdate },
-                    roles: rs { .id, .name }
+                    roles: collect(rs { .id, .name })
                 } as user
                 LIMIT 1
             `;
@@ -122,7 +122,7 @@ export class PassportJwt {
                     u {
                         .id,
                         profil: p { .id, .email, .name, .birthdate },
-                        roles: rs { .id, .name }
+                        roles: collect(rs { .id, .name })
                     } as user,
                     c { .id, .email, .password } as credentials
                 LIMIT 1
