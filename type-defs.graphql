@@ -12,10 +12,7 @@ type Credentials {
 
 type Profil {
     email: String!
-    activated: Boolean!
     name: String!
-    birthdate: DateTime!
-    json: JSON!
 }
 
 type User {
@@ -59,13 +56,29 @@ type OwnTodo @relation(name: "OWN") {
     createdAt: DateTime
 }
 
+########################################
+
 type Query {
-    User(
-        id: ID
-        _id: String
-        first: Int
-        offset: Int
-        orderBy: [_UserOrdering]
-        filter: _UserFilter
-    ): [User] @cypher(statement: "MATCH (this) RETURN this")
+    Role(id: ID first: Int offset: Int orderBy: [_RoleOrdering] filter: _RoleFilter): [Role] @cypher(
+        statement: "MATCH (this) RETURN this"
+    )
+    User(id: ID first: Int offset: Int orderBy: [_UserOrdering] filter: _UserFilter): [User] @cypher(
+        statement: "MATCH (this) RETURN this"
+    )
+    Todo(id: ID first: Int offset: Int orderBy: [_TodoOrdering] filter: _TodoFilter): [Todo] @cypher(
+        statement: "MATCH (this) RETURN this"
+    )
 }
+
+type Mutation {
+    CreateUser(email: String! password: String! name: String!): User @cypher(
+        statement: """
+            MATCH (r:Role {name:\"user\"})
+            CREATE (this:User {id:apoc.create.uuid()}),
+                (this)-[:HAS {createdAt:date()}]->(r),
+                (this)-[:OWN {createdAt:date()}]->(p:Profil {email:$email, name:$name}),
+                (this)-[:OWN {createdAt:date()}]->(c:Credentials {email:$email, password:$password})
+            RETURN this
+        """
+    )
+} 

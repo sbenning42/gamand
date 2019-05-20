@@ -33,7 +33,10 @@ const baseSchema = makeAugmentedSchema({
     schemaDirectives: schemaDirectives,
     resolvers: resolvers,
     config: {
-        query: { exclude: [] },
+        query: { exclude: [
+            'Credentials',
+            'Profil',
+        ] },
         mutation: { exclude: [] },
     },
 });
